@@ -2,12 +2,12 @@
 
 ## Difference with original (sideshow/apns2) repo:
 
-  - [x] Support for SemVer tags (you can use it with go modules)
+  - [x] Support for SemVer tags (you can use it with **go modules**!)
   - [x] GenerateIfExpired now returns Generate results (bool, error) (PR #111)
-  - [x] Added support for http proxy for NewClient (PR 129)
+  - [x] Added support for http proxy for NewClient (PR #129)
   - [x] Update to latest http2 lib 
   - [x] Force StrictMaxConcurrentStreams to always true
-  - [ ] Will be added support for http proxy for NewTokenClient (PR 129)
+  - [ ] Will be added support for http proxy for NewTokenClient
   
  This repo is opened for new PRs!
 
