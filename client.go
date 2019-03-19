@@ -14,7 +14,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/sideshow/apns2/token"
+	"github.com/riftbit/apns2/token"
 	"golang.org/x/net/http2"
 )
 
