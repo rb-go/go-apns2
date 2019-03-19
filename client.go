@@ -11,6 +11,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/sideshow/apns2/token"
@@ -37,6 +38,8 @@ var (
 	// TCPKeepAlive specifies the keep-alive period for an active network
 	// connection. If zero, keep-alives are not enabled.
 	TCPKeepAlive = 60 * time.Second
+	// IdleConnTimeout specifies the max idle time of the connection
+	IdleConnTimeout = 300 * time.Second
 )
 
 // DialTLS is the default dial function for creating TLS connections for
@@ -87,6 +90,42 @@ func NewClient(certificate tls.Certificate) *Client {
 		// SETTINGS_MAX_CONCURRENT_STREAMS of 1 and increase it only after the
 		// first successful authenticated request has gone through.
 		StrictMaxConcurrentStreams: true,
+	}
+	return &Client{
+		HTTPClient: &http.Client{
+			Transport: transport,
+			Timeout:   HTTPClientTimeout,
+		},
+		Certificate: certificate,
+		Host:        DefaultHost,
+	}
+}
+
+// NewProxyClient returns a new Client with http proxy enabled
+// Since the transport of http1.1 does not support DialTLS with http proxy enabled
+// The DialTLS (including TLSDialTimeout and TCPKeepAlive) will be disabled if you use this function
+// proxyUrl like http://127.0.0.1:8888
+func NewProxyClient(certificate tls.Certificate, proxyUrl string) *Client {
+	if proxyUrl == "" {
+		return NewClient(certificate)
+	}
+	tlsConfig := &tls.Config{
+		Certificates: []tls.Certificate{certificate},
+	}
+	if len(certificate.Certificate) > 0 {
+		tlsConfig.BuildNameToCertificate()
+	}
+	transport := &http.Transport{
+		TLSClientConfig: tlsConfig,
+		Proxy: func(request *http.Request) (*url.URL, error) {
+			return url.Parse(proxyUrl)
+		},
+		IdleConnTimeout: IdleConnTimeout,
+	}
+	err := http2.ConfigureTransport(transport)
+	//if configure failed
+	if err != nil {
+		return nil
 	}
 	return &Client{
 		HTTPClient: &http.Client{
