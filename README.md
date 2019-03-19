@@ -1,5 +1,18 @@
 # APNS/2
 
+## Difference with original (sideshow/apns2) repo:
+
+  - [x] Support for SemVer tags (you can use it with go modules)
+  - [x] GenerateIfExpired now returns Generate results (bool, error) (PR #111)
+  - [x] Added support for http proxy for NewClient (PR 129)
+  - [x] Update to latest http2 lib 
+  - [x] Force StrictMaxConcurrentStreams to always true
+  - [ ] Will be added support for http proxy for NewTokenClient (PR 129)
+  
+ This repo is opened for new PRs!
+
+## About package
+
 APNS/2 is a go package designed for simple, flexible and fast Apple Push Notifications on iOS, OSX and Safari using the new HTTP/2 Push provider API.
 
 [![Build Status](https://travis-ci.org/sideshow/apns2.svg?branch=master)](https://travis-ci.org/sideshow/apns2)  [![Coverage Status](https://coveralls.io/repos/sideshow/apns2/badge.svg?branch=master&service=github)](https://coveralls.io/github/sideshow/apns2?branch=master)  [![GoDoc](https://godoc.org/github.com/sideshow/apns2?status.svg)](https://godoc.org/github.com/sideshow/apns2)
