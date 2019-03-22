@@ -6,15 +6,9 @@ go:
   - tip
 
 before_install:
-  - go get gopkg.in/alecthomas/kingpin.v2
   - go get github.com/axw/gocov/gocov
   - go get github.com/mattn/goveralls
   - go get github.com/stretchr/testify/assert
-  - go get github.com/kardianos/govendor
-  - if ! go get github.com/golang/tools/cmd/cover; then go get golang.org/x/tools/cmd/cover; fi
-
-install:
-  - $HOME/gopath/bin/govendor sync
 
 os:
   - linux
