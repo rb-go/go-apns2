@@ -2,6 +2,10 @@
 // builder to make constructing notification payloads easier.
 package payload
 
+import (
+	"encoding/json"
+)
+
 // Payload represents a notification which holds the content that will be
 // marshalled as JSON.
 type Payload struct {
@@ -305,4 +309,9 @@ func (a *aps) alert() *alert {
 		a.Alert = &alert{}
 	}
 	return a.Alert.(*alert)
+}
+
+// MarshalJSON converts the notification payload to JSON.
+func (p *Payload) MarshalJSON() ([]byte, error) {
+	return json.Marshal(p.content)
 }

@@ -3,6 +3,8 @@ package apns2
 import (
 	"encoding/json"
 	"time"
+
+	"github.com/riftbit/apns2/payload"
 )
 
 const (
@@ -74,6 +76,8 @@ func (n *Notification) MarshalJSON() ([]byte, error) {
 		return []byte(n.Payload.(string)), nil
 	case []byte:
 		return n.Payload.([]byte), nil
+	case *payload.Payload:
+		return n.Payload.(*payload.Payload).MarshalJSON()
 	default:
 		return json.Marshal(n.Payload)
 	}
