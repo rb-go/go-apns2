@@ -105,8 +105,8 @@ func NewClient(certificate tls.Certificate) *Client {
 // Since the transport of http1.1 does not support DialTLS with http proxy enabled
 // The DialTLS (including TLSDialTimeout and TCPKeepAlive) will be disabled if you use this function
 // proxyUrl like http://127.0.0.1:8888
-func NewProxyClient(certificate tls.Certificate, proxyUrl string) *Client {
-	if proxyUrl == "" {
+func NewProxyClient(certificate tls.Certificate, proxyURL string) *Client {
+	if proxyURL == "" {
 		return NewClient(certificate)
 	}
 	tlsConfig := &tls.Config{
@@ -118,7 +118,7 @@ func NewProxyClient(certificate tls.Certificate, proxyUrl string) *Client {
 	transport := &http.Transport{
 		TLSClientConfig: tlsConfig,
 		Proxy: func(request *http.Request) (*url.URL, error) {
-			return url.Parse(proxyUrl)
+			return url.Parse(proxyURL)
 		},
 		IdleConnTimeout: IdleConnTimeout,
 	}
@@ -197,6 +197,19 @@ func (c *Client) Push(n *Notification) (*Response, error) {
 // return a Response indicating whether the notification was accepted or
 // rejected by the APNs gateway, or an error if something goes wrong.
 func (c *Client) PushWithContext(ctx Context, n *Notification) (*Response, error) {
+	return c.PushWithContextAndToken(ctx, nil, n)
+}
+
+// PushWithContextAndToken sends a Notification to the APNs gateway. Context carries a
+// deadline and a cancellation signal and allows you to close long running
+// requests when the context timeout is exceeded. Context can be nil, for
+// backwards compatibility.
+//
+// If the underlying http.Client is not currently connected, this method will
+// attempt to reconnect transparently before sending the notification. It will
+// return a Response indicating whether the notification was accepted or
+// rejected by the APNs gateway, or an error if something goes wrong.
+func (c *Client) PushWithContextAndToken(ctx Context, token *token.Token, n *Notification) (*Response, error) {
 	payload, err := n.MarshalJSON()
 	if err != nil {
 		return nil, err
@@ -205,7 +218,12 @@ func (c *Client) PushWithContext(ctx Context, n *Notification) (*Response, error
 	url := fmt.Sprintf("%v/3/device/%v", c.Host, n.DeviceToken)
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(payload))
 
-	if c.Token != nil {
+	if token != nil {
+		err = c.setCustomTokenHeader(token, req)
+		if err != nil {
+			return nil, err
+		}
+	} else if c.Token != nil {
 		err = c.setTokenHeader(req)
 		if err != nil {
 			return nil, err
@@ -244,6 +262,15 @@ func (c *Client) setTokenHeader(r *http.Request) error {
 		return err
 	}
 	r.Header.Set("authorization", fmt.Sprintf("bearer %v", c.Token.Bearer))
+	return nil
+}
+
+func (c *Client) setCustomTokenHeader(token *token.Token, r *http.Request) error {
+	_, err := token.GenerateIfExpired()
+	if err != nil {
+		return err
+	}
+	r.Header.Set("authorization", fmt.Sprintf("bearer %v", token.Bearer))
 	return nil
 }
 
