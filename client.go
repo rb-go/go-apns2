@@ -123,7 +123,7 @@ func NewProxyClient(certificate tls.Certificate, proxyUrl string) *Client {
 		IdleConnTimeout: IdleConnTimeout,
 	}
 	err := http2.ConfigureTransport(transport)
-	//if configure failed
+	// if configure failed
 	if err != nil {
 		return nil
 	}
@@ -197,7 +197,7 @@ func (c *Client) Push(n *Notification) (*Response, error) {
 // return a Response indicating whether the notification was accepted or
 // rejected by the APNs gateway, or an error if something goes wrong.
 func (c *Client) PushWithContext(ctx Context, n *Notification) (*Response, error) {
-	payload, err := json.Marshal(n)
+	payload, err := n.MarshalJSON()
 	if err != nil {
 		return nil, err
 	}
