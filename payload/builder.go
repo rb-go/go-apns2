@@ -2,8 +2,6 @@
 // builder to make constructing notification payloads easier.
 package payload
 
-import "encoding/json"
-
 // Payload represents a notification which holds the content that will be
 // marshalled as JSON.
 type Payload struct {
@@ -12,13 +10,13 @@ type Payload struct {
 
 type aps struct {
 	Alert            interface{} `json:"alert,omitempty"`
-	Badge            interface{} `json:"badge,omitempty"`
-	Category         string      `json:"category,omitempty"`
+	Badge            *int        `json:"badge,omitempty"`
+	Sound            string      `json:"sound,omitempty"`
 	ContentAvailable int         `json:"content-available,omitempty"`
-	MutableContent   int         `json:"mutable-content,omitempty"`
-	Sound            interface{} `json:"sound,omitempty"`
+	Category         string      `json:"category,omitempty"`
 	ThreadID         string      `json:"thread-id,omitempty"`
 	URLArgs          []string    `json:"url-args,omitempty"`
+	MutableContent   int         `json:"mutable-content,omitempty"`
 }
 
 type alert struct {
@@ -34,12 +32,6 @@ type alert struct {
 	TitleLocKey     string   `json:"title-loc-key,omitempty"`
 	SummaryArg      string   `json:"summary-arg,omitempty"`
 	SummaryArgCount int      `json:"summary-arg-count,omitempty"`
-}
-
-type sound struct {
-	Critical int     `json:"critical,omitempty"`
-	Name     string  `json:"name,omitempty"`
-	Volume   float32 `json:"volume,omitempty"`
 }
 
 // NewPayload returns a new Payload struct
@@ -65,7 +57,7 @@ func (p *Payload) Alert(alert interface{}) *Payload {
 //
 //	{"aps":{"badge":b}}
 func (p *Payload) Badge(b int) *Payload {
-	p.aps().Badge = b
+	p.aps().Badge = &b
 	return p
 }
 
@@ -74,7 +66,7 @@ func (p *Payload) Badge(b int) *Payload {
 //
 //	{"aps":{"badge":0}}
 func (p *Payload) ZeroBadge() *Payload {
-	p.aps().Badge = 0
+	*p.aps().Badge = 0
 	return p
 }
 
@@ -92,7 +84,7 @@ func (p *Payload) UnsetBadge() *Payload {
 // This will play a sound from the app bundle, or the default sound otherwise.
 //
 //	{"aps":{"sound":sound}}
-func (p *Payload) Sound(sound interface{}) *Payload {
+func (p *Payload) Sound(sound string) *Payload {
 	p.aps().Sound = sound
 	return p
 }
@@ -304,31 +296,6 @@ func (p *Payload) URLArgs(urlArgs []string) *Payload {
 	return p
 }
 
-// SoundName sets the name value on the aps sound dictionary.
-// This function makes the notification a critical alert, which should be pre-approved by Apple.
-// See: https://developer.apple.com/contact/request/notifications-critical-alerts-entitlement/
-//
-// {"aps":{"sound":{"critical":1,"name":name,"volume":1.0}}}
-func (p *Payload) SoundName(name string) *Payload {
-	p.aps().sound().Name = name
-	return p
-}
-
-// SoundVolume sets the volume value on the aps sound dictionary.
-// This function makes the notification a critical alert, which should be pre-approved by Apple.
-// See: https://developer.apple.com/contact/request/notifications-critical-alerts-entitlement/
-//
-// {"aps":{"sound":{"critical":1,"name":"default","volume":volume}}}
-func (p *Payload) SoundVolume(volume float32) *Payload {
-	p.aps().sound().Volume = volume
-	return p
-}
-
-// MarshalJSON returns the JSON encoded version of the Payload
-func (p *Payload) MarshalJSON() ([]byte, error) {
-	return json.Marshal(p.content)
-}
-
 func (p *Payload) aps() *aps {
 	return p.content["aps"].(*aps)
 }
@@ -338,11 +305,4 @@ func (a *aps) alert() *alert {
 		a.Alert = &alert{}
 	}
 	return a.Alert.(*alert)
-}
-
-func (a *aps) sound() *sound {
-	if _, ok := a.Sound.(*sound); !ok {
-		a.Sound = &sound{Critical: 1, Name: "default", Volume: 1.0}
-	}
-	return a.Sound.(*sound)
 }

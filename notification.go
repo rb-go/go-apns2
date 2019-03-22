@@ -1,8 +1,7 @@
-//go:generate easyjson $GOFILE
-
 package apns2
 
 import (
+	"encoding/json"
 	"time"
 )
 
@@ -21,7 +20,6 @@ const (
 )
 
 // Notification represents the the data and metadata for a APNs Remote Notification.
-// easyjson:json
 type Notification struct {
 
 	// An optional canonical UUID that identifies the notification. The canonical
@@ -69,7 +67,6 @@ type Notification struct {
 	Payload interface{}
 }
 
-/*
 // MarshalJSON converts the notification payload to JSON.
 func (n *Notification) MarshalJSON() ([]byte, error) {
 	switch n.Payload.(type) {
@@ -81,4 +78,3 @@ func (n *Notification) MarshalJSON() ([]byte, error) {
 		return json.Marshal(n.Payload)
 	}
 }
-*/
