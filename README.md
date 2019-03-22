@@ -1,6 +1,6 @@
 # APNS/2
 
-## Difference with original (sideshow/apns2) repo:
+## Difference with original (riftbit/apns2) repo:
 
   - [x] Support for SemVer tags (you can use it with **go modules**!)
   - [x] GenerateIfExpired now returns Generate results (bool, error) (PR #111)
