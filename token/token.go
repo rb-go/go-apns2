@@ -5,6 +5,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"sync"
 	"time"
@@ -106,4 +107,69 @@ func (t *Token) Generate() (bool, error) {
 	t.IssuedAt = issuedAt
 	t.Bearer = bearer
 	return true, nil
+}
+
+// TokenManager ...
+type TokenManager struct {
+	mu    sync.Mutex
+	token map[interface{}]*Token
+}
+
+// NewTokenManager ...
+func NewTokenManager() *TokenManager {
+	return &TokenManager{
+		token: make(map[interface{}]*Token),
+	}
+}
+
+// Load ...
+func (c *TokenManager) Get(key interface{}) (*Token, bool) {
+	c.mu.Lock()
+
+	val, ok := c.token[key]
+
+	changed, err := val.GenerateIfExpired()
+	if err != nil {
+		delete(c.token, key)
+		return nil, false
+	}
+
+	if changed {
+		c.token[key] = val
+	}
+
+	c.mu.Unlock()
+	return val, ok
+}
+
+// Store ...
+func (c *TokenManager) Set(key interface{}, value *Token) {
+	c.mu.Lock()
+	c.token[key] = value
+	c.mu.Unlock()
+}
+
+// Remove ...
+func (c *TokenManager) Remove(key interface{}, value *Token) {
+	c.mu.Lock()
+	delete(c.token, key)
+	c.mu.Unlock()
+}
+
+// RegenerateAllIfExpired ...
+func (c *TokenManager) RegenerateAllIfExpired() error {
+	var err error
+	if c.token != nil {
+		for key, tokenData := range c.token {
+			tokenData.Lock()
+			_, err := tokenData.GenerateIfExpired()
+			if err != nil {
+				err = fmt.Errorf("%v - %v", key, err)
+				break
+			}
+			c.token[key] = tokenData
+			tokenData.Unlock()
+		}
+	}
+	return err
 }

@@ -219,10 +219,7 @@ func (c *Client) PushWithContextAndToken(ctx Context, token *token.Token, n *Not
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(payload))
 
 	if token != nil {
-		err = c.setCustomTokenHeader(token, req)
-		if err != nil {
-			return nil, err
-		}
+		c.setCustomTokenHeader(token, req)
 	} else if c.Token != nil {
 		err = c.setTokenHeader(req)
 		if err != nil {
@@ -265,13 +262,8 @@ func (c *Client) setTokenHeader(r *http.Request) error {
 	return nil
 }
 
-func (c *Client) setCustomTokenHeader(token *token.Token, r *http.Request) error {
-	_, err := token.GenerateIfExpired()
-	if err != nil {
-		return err
-	}
+func (c *Client) setCustomTokenHeader(token *token.Token, r *http.Request) {
 	r.Header.Set("authorization", fmt.Sprintf("bearer %v", token.Bearer))
-	return nil
 }
 
 func setHeaders(r *http.Request, n *Notification) {
