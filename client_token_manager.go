@@ -43,7 +43,7 @@ func (ctm *ClientTokenManager) Push(tokenKey interface{}, n *Notification) (*Res
 		return nil, ErrTokenNotFound
 	}
 
-	return ctm.client.PushWithContextAndToken(nil, token, n)
+	return ctm.Client.PushWithContextAndToken(nil, token, n)
 }
 
 // PushWithContext ...
@@ -54,5 +54,5 @@ func (ctm *ClientTokenManager) PushWithContext(ctx Context, tokenKey interface{}
 		return nil, ErrTokenNotFound
 	}
 
-	return ctm.client.PushWithContextAndToken(ctx, token, n)
+	return ctm.Client.PushWithContextAndToken(ctx, token, n)
 }
