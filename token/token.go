@@ -122,7 +122,15 @@ func NewTokenManager() *TokenManager {
 	}
 }
 
-// Load ...
+// IsExist ...
+func (c *TokenManager) IsExist(key interface{}) bool {
+	c.mu.Lock()
+	_, ok := c.token[key]
+	c.mu.Unlock()
+	return ok
+}
+
+// Get ...
 func (c *TokenManager) Get(key interface{}) (*Token, bool) {
 	c.mu.Lock()
 
