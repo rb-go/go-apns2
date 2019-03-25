@@ -13,7 +13,7 @@ var (
 
 // ClientManager is a way to manage multiple connections to the APNs.
 type ClientTokenManager struct {
-	client       *Client
+	Client       *Client
 	TokenManager *token.TokenManager
 }
 
@@ -28,7 +28,7 @@ type ClientTokenManager struct {
 // a Client with default options.
 func NewClientTokenManager() *ClientTokenManager {
 	manager := &ClientTokenManager{
-		client:       NewTokenClient(nil),
+		Client:       NewTokenClient(nil),
 		TokenManager: token.NewTokenManager(),
 	}
 
