@@ -150,7 +150,7 @@ func (c *TokenManager) Get(key interface{}) (*Token, bool) {
 	return val, ok
 }
 
-// Store ...
+// Set ...
 func (c *TokenManager) Set(key interface{}, value *Token) {
 	c.mu.Lock()
 	c.token[key] = value

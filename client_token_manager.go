@@ -11,7 +11,7 @@ var (
 	ErrTokenNotFound = errors.New("tokenManager: token not found in TokenManager storage")
 )
 
-// ClientManager is a way to manage multiple connections to the APNs.
+// ClientTokenManager is a way to manage multiple tokens with one connection to the APNs.
 type ClientTokenManager struct {
 	Client       *Client
 	TokenManager *token.TokenManager
