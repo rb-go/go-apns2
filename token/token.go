@@ -109,7 +109,7 @@ func (t *Token) Generate() (bool, error) {
 	return true, nil
 }
 
-// TokenManager ...
+// Manager ...
 type Manager struct {
 	mu    sync.Mutex
 	token map[interface{}]*Token
