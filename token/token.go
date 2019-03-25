@@ -110,20 +110,20 @@ func (t *Token) Generate() (bool, error) {
 }
 
 // TokenManager ...
-type TokenManager struct {
+type Manager struct {
 	mu    sync.Mutex
 	token map[interface{}]*Token
 }
 
 // NewTokenManager ...
-func NewTokenManager() *TokenManager {
-	return &TokenManager{
+func NewTokenManager() *Manager {
+	return &Manager{
 		token: make(map[interface{}]*Token),
 	}
 }
 
 // IsExist ...
-func (c *TokenManager) IsExist(key interface{}) bool {
+func (c *Manager) IsExist(key interface{}) bool {
 	c.mu.Lock()
 	_, ok := c.token[key]
 	c.mu.Unlock()
@@ -131,7 +131,7 @@ func (c *TokenManager) IsExist(key interface{}) bool {
 }
 
 // Get ...
-func (c *TokenManager) Get(key interface{}) (*Token, bool) {
+func (c *Manager) Get(key interface{}) (*Token, bool) {
 	c.mu.Lock()
 
 	val, ok := c.token[key]
@@ -151,21 +151,21 @@ func (c *TokenManager) Get(key interface{}) (*Token, bool) {
 }
 
 // Set ...
-func (c *TokenManager) Set(key interface{}, value *Token) {
+func (c *Manager) Set(key interface{}, value *Token) {
 	c.mu.Lock()
 	c.token[key] = value
 	c.mu.Unlock()
 }
 
 // Remove ...
-func (c *TokenManager) Remove(key interface{}, value *Token) {
+func (c *Manager) Remove(key interface{}, value *Token) {
 	c.mu.Lock()
 	delete(c.token, key)
 	c.mu.Unlock()
 }
 
 // RegenerateAllIfExpired ...
-func (c *TokenManager) RegenerateAllIfExpired() error {
+func (c *Manager) RegenerateAllIfExpired() error {
 	var err error
 	if c.token != nil {
 		for key, tokenData := range c.token {

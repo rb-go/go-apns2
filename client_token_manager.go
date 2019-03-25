@@ -14,7 +14,7 @@ var (
 // ClientTokenManager is a way to manage multiple tokens with one connection to the APNs.
 type ClientTokenManager struct {
 	Client       *Client
-	TokenManager *token.TokenManager
+	TokenManager *token.Manager
 }
 
 // NewClientTokenManager returns a new ClientManager for prolonged, concurrent usage
