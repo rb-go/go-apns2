@@ -135,6 +135,10 @@ func (c *Manager) Get(key interface{}) (*Token, bool) {
 	c.mu.Lock()
 
 	val, ok := c.token[key]
+	if !ok || val == nil {
+		delete(c.token, key)
+		return nil, false
+	}
 
 	changed, err := val.GenerateIfExpired()
 	if err != nil {
