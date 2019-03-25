@@ -3,6 +3,7 @@
 ## Difference with original (riftbit/apns2) repo:
 
   - [x] Support for SemVer tags (you can use it with **go modules**!)
+  - [x] Added **ClientTokenManager** (one connection - many tokens)
   - [x] GenerateIfExpired now returns Generate results (bool, error) (PR #111)
   - [x] Added support for http proxy for NewClient (PR #129)
   - [x] Update to latest http2 lib 
